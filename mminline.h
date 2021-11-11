@@ -6,8 +6,8 @@
 // NOTE: to be included only in mm.c
 
 static block_t *flist_first;  // head of circular, doubly linked free list
-block_t *prologue;
-block_t *epilogue;
+extern block_t* prologue;
+extern block_t* epilogue;
 
 // returns a pointer to the block's end tag (You probably won't need to use this
 // directly)
