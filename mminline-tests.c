@@ -25,6 +25,8 @@ void assert_pull_free_block(block_t *expected, block_t *actual, const char *mess
 void print_test_summary();
 
 static block_t *flist_first;
+block_t* prologue;
+block_t* epilogue;
 
 void set_flink_test() { 
     prologue = malloc(16);
@@ -88,6 +90,15 @@ void pull_free_block_test() {
     assert(block_one->payload[1] == (int)((char *)block_three - (char *)prologue));
     assert(block_three->payload[0] == (int)((char *)block_one - (char *)prologue));
     assert(block_three->payload[1] == (int)((char *)block_one - (char *)prologue));
+
+    pull_free_block(block_three);
+    sleep(1);
+    assert(block_one->payload[0] == (int)((char *)block_one - (char *)prologue));
+    assert(block_one->payload[1] == (int)((char *)block_one - (char *)prologue));
+
+    pull_free_block(block_one);
+    sleep(1);
+    assert(flist_first == NULL);
 
     free(prologue);
     free(epilogue);

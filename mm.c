@@ -20,6 +20,9 @@
 #include "./mm.h"
 #include "./mminline.h"
 
+block_t* prologue;
+block_t* epilogue;
+
 // rounds up to the nearest multiple of WORD_SIZE
 static inline size_t align(size_t size) {
     return (((size) + (WORD_SIZE - 1)) & ~(WORD_SIZE - 1));
