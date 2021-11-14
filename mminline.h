@@ -127,6 +127,11 @@ static inline block_t *block_flink(block_t *b) {
 static inline void block_set_flink(block_t *b, block_t *new_flink) {
     assert(!block_allocated(b) && !block_allocated(new_flink));
     // TODO: implement this function!
+    // store value as an integer
+    b->payload[0] = (int)((char*)new_flink - (char *)prologue);
+    // blink vs flink
+    // new flink = block + size
+    // payload[1]
 }
 
 // given the input block 'b', returns b's blink which contains the
@@ -143,12 +148,27 @@ static inline block_t *block_blink(block_t *b) {
 static inline void block_set_blink(block_t *b, block_t *new_blink) {
     assert(!block_allocated(b) && !block_allocated(new_blink));
     // TODO: implement this function!
+    b->payload[1] = (int)((char*)new_blink - (char *)prologue);
 }
 
 // pull a block from the (circularly doubly linked) free list
 static inline void pull_free_block(block_t *fb) {
     // TODO: implement this function!
     // Hint: consider the case when fb is the only block in the free list
+    // remove current fb block, you have prev and next of fb
+    // if fb is only element (prev and next = fb), set flist_first equal to NULL
+    assert(!block_allocated(fb));
+    if (block_next(flist_first) == block_prev(flist_first)) { // if fb is the only elt in the list -> so, prev and next = fb
+        flist_first = NULL;
+    }
+    else { // otherwise,
+        block_t *prev = block_prev(fb); // gets element before fb
+        block_t *next = block_next(fb); // gets element after fb
+    
+        // update 'last' and 'flist_first' so they point to 'fb'
+        block_set_flink(prev, next);
+        block_set_blink(prev, next);
+    }
 }
 
 // insert block into the (circularly doubly linked) free list
