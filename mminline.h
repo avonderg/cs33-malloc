@@ -159,7 +159,7 @@ static inline void pull_free_block(block_t *fb) {
     // if fb is only element (prev and next = fb), set flist_first equal to NULL
     assert(!block_allocated(fb));
     // if fb is the only elt in the list -> so, prev and next = fb
-    if (fb = flist_first) {
+    if (fb == flist_first) {
         // two cases: other blocks following, or it is the only elt
         if ((flist_first = block_flink(fb)) == fb) { // an assignment
             flist_first = NULL;
