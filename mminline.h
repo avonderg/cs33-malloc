@@ -159,18 +159,19 @@ static inline void pull_free_block(block_t *fb) {
     // if fb is only element (prev and next = fb), set flist_first equal to NULL
     assert(!block_allocated(fb));
     // if fb is the only elt in the list -> so, prev and next = fb
-    if ((fb = flist_first) && (block_flink(fb) == fb)) {
+    if (fb = flist_first) {
         // two cases: other blocks following, or it is the only elt
-        flist_first = NULL;
+        if ((flist_first = block_flink(fb)) == fb) { // an assignment
+            flist_first = NULL;
+            return;
+        }
     }
-    else { // otherwise,
-        block_t *prev = block_blink(fb); // gets free block before fb
-        block_t *next = block_flink(fb); // gets next free block after fb
+    block_t *prev = block_blink(fb); // gets free block before fb
+    block_t *next = block_flink(fb); // gets next free block after fb
     
         // update 'last' and 'flist_first' so they point to 'fb'
-        block_set_flink(prev, next);
-        block_set_blink(prev, next);
-    }
+    block_set_flink(prev, next);
+    block_set_blink(prev, next);
 }
 
 // insert block into the (circularly doubly linked) free list
