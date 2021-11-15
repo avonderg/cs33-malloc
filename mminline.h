@@ -148,7 +148,7 @@ static inline block_t *block_blink(block_t *b) {
 static inline void block_set_blink(block_t *b, block_t *new_blink) {
     assert(!block_allocated(b) && !block_allocated(new_blink));
     // TODO: implement this function!
-    b->payload[1] = (int)((char*)new_blink - (char *)prologue);
+    b->payload[1] = (int)((char*)new_blink + (char *)prologue);
 }
 
 // pull a block from the (circularly doubly linked) free list
