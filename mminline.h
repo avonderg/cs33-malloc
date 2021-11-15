@@ -168,10 +168,9 @@ static inline void pull_free_block(block_t *fb) {
     }
     block_t *prev = block_blink(fb); // gets free block before fb
     block_t *next = block_flink(fb); // gets next free block after fb
-    
         // update 'last' and 'flist_first' so they point to 'fb'
     block_set_flink(prev, next);
-    block_set_blink(prev, next);
+    block_set_blink(next, prev);
 }
 
 // insert block into the (circularly doubly linked) free list
