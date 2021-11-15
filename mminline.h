@@ -162,8 +162,8 @@ static inline void pull_free_block(block_t *fb) {
         flist_first = NULL;
     }
     else { // otherwise,
-        block_t *prev = block_prev(fb); // gets element before fb
-        block_t *next = block_next(fb); // gets element after fb
+        block_t *prev = block_blink(fb); // gets free block before fb
+        block_t *next = block_flink(fb); // gets next free block after fb
     
         // update 'last' and 'flist_first' so they point to 'fb'
         block_set_flink(prev, next);
