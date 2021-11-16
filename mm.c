@@ -47,11 +47,11 @@ int mm_init(void) {
 // allocate prologue and epilogue
 // allocate initial heap area
 prologue = mem_sbrk(TAGS_SIZE);
-if (prologue == -1) {
+if ((int)prologue == -1) {
     return -1;
 }
 epilogue = mem_sbrk(TAGS_SIZE);
-if (epilogue == -1) {
+if ((int)epilogue == -1) {
     return -1;
 }
 flist_first = NULL; // not null if there is a free block
