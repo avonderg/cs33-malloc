@@ -46,14 +46,14 @@ int mm_init(void) {
 // flist_first = NULL;
 // allocate prologue and epilogue
 // allocate initial heap area
-prologue = mem_sbrk(TAGS_SIZE);
+// prologue = mem_sbrk(TAGS_SIZE);
 // if (prologue == -1) {
 //     return -1;
 // }
 if ((prologue = mem_sbrk(TAGS_SIZE)) == -1) {
     return -1;
 }
-epilogue = mem_sbrk(TAGS_SIZE);
+// epilogue = mem_sbrk(TAGS_SIZE);
 // if (epilogue == -1) {
 //     return -1;
 // }
