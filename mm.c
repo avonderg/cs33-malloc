@@ -50,10 +50,16 @@ prologue = mem_sbrk(TAGS_SIZE);
 // if (prologue == -1) {
 //     return -1;
 // }
+if ((prologue = mem_sbrk(TAGS_SIZE)) == -1) {
+    return -1;
+}
 epilogue = mem_sbrk(TAGS_SIZE);
 // if (epilogue == -1) {
 //     return -1;
 // }
+if ((epilogue = mem_sbrk(TAGS_SIZE)) == -1) {
+    return -1;
+}
 flist_first = NULL; // not null if there is a free block
 block_set_size_and_allocated(prologue, TAGS_SIZE, 1);
 block_set_size_and_allocated(epilogue, TAGS_SIZE, 1);
