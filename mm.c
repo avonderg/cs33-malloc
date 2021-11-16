@@ -46,17 +46,9 @@ int mm_init(void) {
 // flist_first = NULL;
 // allocate prologue and epilogue
 // allocate initial heap area
-// prologue = mem_sbrk(TAGS_SIZE);
-// if (prologue == -1) {
-//     return -1;
-// }
 if ((prologue = mem_sbrk(TAGS_SIZE)) == -1) {
     return -1;
 }
-// epilogue = mem_sbrk(TAGS_SIZE);
-// if (epilogue == -1) {
-//     return -1;
-// }
 if ((epilogue = mem_sbrk(TAGS_SIZE)) == -1) {
     return -1;
 }
@@ -78,8 +70,30 @@ return 0;
  *          is a multiple of ALIGNMENT), or NULL if an error occurred
  */
 void *mm_malloc(size_t size) {
-    // TODO
-    return NULL;
+    int flag = 0;
+    // search through flist
+    block_t *curr = flist_first;
+    block_t *new = NULL;
+    if (size == 0) {
+        return NULL;
+    }
+    while (curr != flist_first || flag == 0) {
+    if (curr >= size) {
+        block_set_size_and_allocated(curr, size, 1);
+        return curr->payload;
+    }
+    else {
+        curr = block_next(curr);
+        if (curr == flist_first) {
+            flag = 1;
+        }
+    }
+    }
+    if ((new = mem_sbrk(size)) == -1) { // ask for more memory (can't find a fit)
+        return NULL;
+    }
+    block_set_size_and_allocated(new, size, 1);
+    return new->payload;
 }
 
 /*                              __
