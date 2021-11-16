@@ -40,7 +40,25 @@ static inline size_t align(size_t size) {
  * returns: 0, if successful
  *         -1, if an error occurs
  */
-int mm_init(void) { return -1; }
+int mm_init(void) {
+// init flist_first
+// look at gearup and handout 
+// flist_first = NULL;
+// allocate prologue and epilogue
+// allocate initial heap area
+prologue = mem_sbrk(TAGS_SIZE);
+if (prologue == -1) {
+    return -1;
+}
+epilogue = mem_sbrk(TAGS_SIZE);
+if (epilogue == -1) {
+    return -1;
+}
+flist_first = NULL; // not null if there is a free block
+block_set_size_and_allocated(prologue, TAGS_SIZE, 1);
+block_set_size_and_allocated(epilogue, TAGS_SIZE, 1);
+return 0;
+}
 
 /*     _ __ ___  _ __ ___      _ __ ___   __ _| | | ___   ___
  *    | '_ ` _ \| '_ ` _ \    | '_ ` _ \ / _` | | |/ _ \ / __|
