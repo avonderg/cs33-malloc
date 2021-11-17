@@ -74,13 +74,13 @@ void *mm_malloc(size_t size) {
     // search through flist
     block_t *curr = flist_first;
     block_t *new = NULL;
-    align(size);
+    size = align(size) + TAGS_SIZE;
     if (size == 0) {
         return NULL;
     }
     if (flist_first == NULL) {
     block_t *first = NULL;
-        if ((first = mem_sbrk(size)) == -1) { // ask for more memory (can't find a fit)
+        if ((first = mem_sbrk(size)) == -1) { 
         return NULL;
     }
     block_set_size_and_allocated(first, size, 1);
