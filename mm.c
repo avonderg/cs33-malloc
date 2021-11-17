@@ -78,19 +78,30 @@ void *mm_malloc(size_t size) {
     if (size == 0) {
         return NULL;
     }
-    if (flist_first == NULL) {
-    block_t *first = NULL;
-        if ((first = mem_sbrk(size)) == -1) { 
-        return NULL;
-    }
-    block_set_size_and_allocated(first, size, 1);
-    return first->payload;
-    }
+    // if (flist_first == NULL) {
+    // block_t *first = NULL;
+    // if ((first = mem_sbrk(size)) == -1) { 
+    //     return NULL;
+    // }
+    // block_set_size_and_allocated(first, size, 1);
+    // return first->payload;
+    // }
     while (curr != flist_first || flag == 0) {
-    if (curr >= size) {
-        block_set_size_and_allocated(curr, size, 1);
+    if (block_size(curr) >= size) {
+        block_t *alloc = curr;
+        pull_free_block(curr);
+        if (size > MINBLOCKSIZE && block_size(curr) - size > MINBLOCKSIZE) {
+            block_t *alloc = curr;
+            size_t total = block_size(curr);
+            block_set_size_and_allocated(alloc, size, 1);
+            block_t *freed = block_next(curr);
+            block_set_size_and_allocated(freed, total-size, 0); //splitting- taking total size - size allocated
+            insert_free_block(freed);
+        }
+        block_set_allocated(curr, 1);
         return curr->payload;
     }
+
     else {
         curr = block_next(curr);
         if (curr == flist_first) {
@@ -101,7 +112,10 @@ void *mm_malloc(size_t size) {
     if ((new = mem_sbrk(size)) == -1) { // ask for more memory (can't find a fit)
         return NULL;
     }
+    new = epilogue; // new is the end
     block_set_size_and_allocated(new, size, 1);
+    epilogue = block_next(new); // epilogue after new
+    block_set_size_and_allocated(epilogue, TAGS_SIZE, 1);
     return new->payload;
 }
 
