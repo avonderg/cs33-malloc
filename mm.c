@@ -74,6 +74,7 @@ void *mm_malloc(size_t size) {
     // search through flist
     block_t *curr = flist_first;
     block_t *new = NULL;
+    align(size);
     if (size == 0) {
         return NULL;
     }
