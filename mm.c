@@ -70,7 +70,6 @@ return 0;
  *          is a multiple of ALIGNMENT), or NULL if an error occurred
  */
 void *mm_malloc(size_t size) {
-    int flag = 0;
     // search through flist
     block_t *curr = flist_first;
     block_t *new = NULL;
@@ -86,7 +85,11 @@ void *mm_malloc(size_t size) {
     // block_set_size_and_allocated(first, size, 1);
     // return first->payload;
     // }
-    while (curr != flist_first || flag == 0) {
+    // block_t *new_block = mem_sbrk(size);
+    // if (new_block == (void *)-1) {
+    //     return NULL;
+    // }
+    while (curr != NULL) {
     if (block_size(curr) >= size) {
         block_t *alloc = curr;
         pull_free_block(curr);
@@ -101,12 +104,15 @@ void *mm_malloc(size_t size) {
         block_set_allocated(curr, 1);
         return curr->payload;
     }
-
-    else {
-        curr = block_next(curr);
-        if (curr == flist_first) {
-            flag = 1;
-        }
+    // else {
+    //     curr = block_next(curr);
+    //     if (curr == flist_first) {
+    //         flag = 1;
+    //     }
+    // }
+    curr = block_flink(curr);
+    if (curr == flist_first) {
+        break;
     }
     }
     if ((new = mem_sbrk(size)) == -1) { // ask for more memory (can't find a fit)
