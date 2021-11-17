@@ -77,6 +77,14 @@ void *mm_malloc(size_t size) {
     if (size == 0) {
         return NULL;
     }
+    if (flist_first == NULL) {
+    block_t *first = NULL;
+        if ((first = mem_sbrk(size)) == -1) { // ask for more memory (can't find a fit)
+        return NULL;
+    }
+    block_set_size_and_allocated(first, size, 1);
+    return first->payload;
+    }
     while (curr != flist_first || flag == 0) {
     if (curr >= size) {
         block_set_size_and_allocated(curr, size, 1);
@@ -108,7 +116,11 @@ void *mm_malloc(size_t size) {
  * returns: nothing
  */
 void mm_free(void *ptr) {
-    // TODO
+    block_t *block = payload_to_block(ptr);
+    block_set_allocated(block, 0);
+    insert_free_block(block);
+    // coalesce eventually-> check if prev and next are free 
+    // make a coalesce func
 }
 
 /*
