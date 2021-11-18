@@ -21,7 +21,7 @@
 #include "./mminline.h"
 block_t* prologue;
 block_t* epilogue;
-void coalesce(void *b);
+block_t* coalesce(void *b);
 
 // rounds up to the nearest multiple of WORD_SIZE
 static inline size_t align(size_t size) {
@@ -121,12 +121,12 @@ void *mm_malloc(size_t size) {
 void mm_free(void *ptr) {
     block_t *block = payload_to_block(ptr);
     block_set_allocated(block, 0);
-    coalesce(ptr); // coalesce
+    block = coalesce(ptr); // coalesce
     insert_free_block(block);
 }
 
 // write def
-void coalesce(void *b) {
+block_t* coalesce(void *b) {
     block_t *t = payload_to_block(b);
     block_t *next = block_next(t);
     block_t *prev = block_prev(t);
@@ -136,6 +136,7 @@ void coalesce(void *b) {
         size_t one = block_size(next);
         size_t two = block_size(prev);
         size_t three = block_size(t);
+        assert(!block_allocated(next));
         pull_free_block(next);
         block_set_allocated(next, 0);
         pull_free_block(prev);
@@ -167,8 +168,9 @@ void coalesce(void *b) {
         t = prev;
     }
     else {
-        return;
+        return t;
     }
+    return t;
 }
 
 /*
