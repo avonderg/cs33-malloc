@@ -1,10 +1,11 @@
 CC = gcc
 CFLAGS = -Wall -Wextra -Wunused -O2 -Wpointer-arith -Wpedantic -g -std=gnu99 #after 02 -Werror
+#CFLAGS += -Werror
 
 # to add tracefiles, add filenames or other macros separated by commas,
 # e.g. BASE_TRACEFILES,COALESCE_TRACEFILES,my_test_trace.rep
 # TRACEFILES = BASE_TRACEFILES,COALESCE_TRACEFILES,REALLOC_TRACEFILES
-TRACEFILES = BASE_TRACEFILES, COALESCE_TRACEFILES
+TRACEFILES = BASE_TRACEFILES,COALESCE_TRACEFILE
 
 
 OBJS = mdriver.o memlib.o fsecs.o fcyc.o clock.o ftimer.o
