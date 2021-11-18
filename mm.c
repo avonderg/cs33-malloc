@@ -200,10 +200,10 @@ void *mm_realloc(void *ptr, size_t size) {
     size_t requested = block_size(block);
     // how to find available size? -> coalesce?
     size_t avail = original;
-    if (!block_prev_allocated) { // if prev free, increase available space
+    if (!block_prev_allocated(block)) { // if prev free, increase available space
         avail = avail + block_size(block_prev(block));
     }
-    if (!block_next_allocated) { // if next free, increase available space
+    if (!block_next_allocated(block)) { // if next free, increase available space
         avail = avail + block_size(block_next(block));
     }
     if (requested <= avail) { // if we do fit
