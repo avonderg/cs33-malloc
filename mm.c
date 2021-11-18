@@ -21,6 +21,7 @@
 #include "./mminline.h"
 block_t* prologue;
 block_t* epilogue;
+void coalesce(void *b);
 
 // rounds up to the nearest multiple of WORD_SIZE
 static inline size_t align(size_t size) {
@@ -167,7 +168,7 @@ void coalesce(void *b) {
         t = prev;
     }
     else {
-        return b;
+        return;
     }
 }
 
