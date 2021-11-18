@@ -77,18 +77,6 @@ void *mm_malloc(size_t size) {
     if (size == 0) {
         return NULL;
     }
-    // if (flist_first == NULL) {
-    // block_t *first = NULL;
-    // if ((first = mem_sbrk(size)) == -1) { 
-    //     return NULL;
-    // }
-    // block_set_size_and_allocated(first, size, 1);
-    // return first->payload;
-    // }
-    // block_t *new_block = mem_sbrk(size);
-    // if (new_block == (void *)-1) {
-    //     return NULL;
-    // }
     while (curr != NULL) {
     if (block_size(curr) >= size) {
         block_t *alloc = curr;
@@ -104,12 +92,6 @@ void *mm_malloc(size_t size) {
         block_set_allocated(curr, 1);
         return curr->payload;
     }
-    // else {
-    //     curr = block_next(curr);
-    //     if (curr == flist_first) {
-    //         flag = 1;
-    //     }
-    // }
     curr = block_flink(curr);
     if (curr == flist_first) {
         break;
@@ -139,9 +121,54 @@ void *mm_malloc(size_t size) {
 void mm_free(void *ptr) {
     block_t *block = payload_to_block(ptr);
     block_set_allocated(block, 0);
+    coalece(ptr); // coalesce
     insert_free_block(block);
-    // coalesce eventually-> check if prev and next are free 
-    // make a coalesce func
+}
+
+// write def
+void coalesce(void *b) {
+    block_t *t = payload_to_block(b);
+    block_t *next = block_next(t);
+    block_t *prev = block_prev(t);
+    if (!(block_prev_allocated(t)) && !(block_next_allocated(t))) { // if next and prev are unallocated (free)
+       // add up blocks
+       // put in new block of that size into the free list
+        size_t one = block_size(next);
+        size_t two = block_size(prev);
+        size_t three = block_size(t);
+        pull_free_block(next);
+        block_set_allocated(next, 0);
+        pull_free_block(prev);
+        block_set_allocated(prev, 0);
+        pull_free_block(t);
+        block_set_allocated(t, 0);
+        block_set_size(t, (one+two+three));
+       // set pointer to prev
+        t = prev;
+    }
+    else if ((block_prev_allocated(t)) && !(block_next_allocated(t))) { // if prev allocated, next unallocated
+        size_t one = block_size(next);
+        size_t three = block_size(t);
+        pull_free_block(next);
+        block_set_allocated(next, 0);
+        pull_free_block(t);
+        block_set_allocated(t, 0);
+        block_set_size(t, (one+three));
+    }
+    else if (!(block_prev_allocated(t)) && (block_next_allocated(t))) { // if prev unallocated, next allocated
+        size_t two = block_size(prev);
+        size_t three = block_size(t);
+        pull_free_block(prev);
+        block_set_allocated(prev, 0);
+        pull_free_block(t);
+        block_set_allocated(t, 0);
+        block_set_size(t, (two+three));
+       // set pointer to prev
+        t = prev;
+    }
+    else {
+        return b;
+    }
 }
 
 /*
