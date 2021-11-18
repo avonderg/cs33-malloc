@@ -83,7 +83,6 @@ void *mm_malloc(size_t size) {
         block_t *alloc = curr;
         pull_free_block(curr);
         if (size > MINBLOCKSIZE && block_size(curr) - size > MINBLOCKSIZE) {
-            block_t *alloc = curr;
             size_t total = block_size(curr);
             block_set_size_and_allocated(alloc, size, 1);
             block_t *freed = block_next(curr);
@@ -150,7 +149,7 @@ void coalesce(void *b) {
        // set pointer to prev
         t = prev;
     }
-    else if ((block_prev_allocated(t)) && !(block_next_allocated(t)) || prev == NULL) { // if prev allocated, next unallocated
+    else if ((block_prev_allocated(t)) && !(block_next_allocated(t)) || (prev == NULL)) { // if prev allocated, next unallocated
         size_t one = block_size(next);
         size_t three = block_size(t);
         pull_free_block(next);
@@ -159,11 +158,11 @@ void coalesce(void *b) {
         block_set_allocated(t, 0);
         block_set_size(t, (one+three));
     }
-    else if (!(block_prev_allocated(t)) && (block_next_allocated(t)) || next == NULL) { // if prev unallocated, next allocated
+    else if (!(block_prev_allocated(t)) && (block_next_allocated(t)) || (next == NULL)) { // if prev unallocated, next allocated
         size_t two = block_size(prev);
         size_t three = block_size(t);
-        pull_free_block(prev);
-        block_set_allocated(prev, 0);
+        // pull_free_block(prev);
+        // block_set_allocated(prev, 0);
         pull_free_block(t);
         block_set_allocated(t, 0);
         block_set_size(t, (two+three));
