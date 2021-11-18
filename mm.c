@@ -130,9 +130,6 @@ void coalesce(void *b) {
     block_t *t = payload_to_block(b);
     block_t *next = block_next(t);
     block_t *prev = block_prev(t);
-    if (next == NULL && prev == NULL) {
-        return;
-    }
     if (!(block_prev_allocated(t)) && !(block_next_allocated(t))) { // if next and prev are unallocated (free)
        // add up blocks
        // put in new block of that size into the free list
@@ -143,28 +140,28 @@ void coalesce(void *b) {
         block_set_allocated(next, 0);
         pull_free_block(prev);
         block_set_allocated(prev, 0);
-        pull_free_block(t);
         block_set_allocated(t, 0);
+        pull_free_block(t);
         block_set_size(t, (one+two+three));
        // set pointer to prev
         t = prev;
     }
-    else if ((block_prev_allocated(t)) && !(block_next_allocated(t)) || (prev == NULL)) { // if prev allocated, next unallocated
+    else if ((block_prev_allocated(t)) && !(block_next_allocated(t))) { // if prev allocated, next unallocated
         size_t one = block_size(next);
         size_t three = block_size(t);
         pull_free_block(next);
         block_set_allocated(next, 0);
-        pull_free_block(t);
         block_set_allocated(t, 0);
+        pull_free_block(t);
         block_set_size(t, (one+three));
     }
-    else if (!(block_prev_allocated(t)) && (block_next_allocated(t)) || (next == NULL)) { // if prev unallocated, next allocated
+    else if (!(block_prev_allocated(t)) && (block_next_allocated(t))) { // if prev unallocated, next allocated
         size_t two = block_size(prev);
         size_t three = block_size(t);
-        // pull_free_block(prev);
-        // block_set_allocated(prev, 0);
-        pull_free_block(t);
+        pull_free_block(prev);
+        block_set_allocated(prev, 0);
         block_set_allocated(t, 0);
+        pull_free_block(t);
         block_set_size(t, (two+three));
        // set pointer to prev
         t = prev;
