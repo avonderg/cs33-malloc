@@ -198,4 +198,49 @@ void *mm_realloc(void *ptr, size_t size) {
     block_t *block = payload_to_block(ptr);
     size_t original = block_size(block);
     size_t requested = block_size(block);
+    // how to find available size? -> coalesce?
+    size_t avail = original;
+    if (!block_prev_allocated) { // if prev free, increase available space
+        avail = avail + block_size(block_prev(block));
+    }
+    if (!block_next_allocated) { // if next free, increase available space
+        avail = avail + block_size(block_next(block));
+    }
+    if (requested <= avail) { // if we do fit
+        block_t *new = coalesce(ptr); // gets new address
+        block_t *alloc = new;
+        pull_free_block(new);
+        if (size > MINBLOCKSIZE && block_size(new) - size > MINBLOCKSIZE) { // splitting
+            size_t total = block_size(new);
+            block_set_size_and_allocated(alloc, size, 1);
+            block_t *freed = block_next(new);
+            block_set_size_and_allocated(freed, total-size, 0); 
+            insert_free_block(freed);
+        }
+        block_set_allocated(new, 1);
+        return new->payload;
+    }
+    else { // if we do not fit
+        block_t *curr = flist_first;
+        block_t *b = NULL;
+        while (curr != NULL) {
+            if (block_size(curr) >= size) {
+            block_t *alloc = curr;
+            pull_free_block(curr);
+            block_set_allocated(curr, 1);
+            return curr->payload;
+        }
+        curr = block_flink(curr);
+        if (curr == flist_first) {
+            break;
+        }
+        }
+        b = mem_sbrk(size);
+    if (b == (void *)-1) { // ask for more memory (can't find a fit)
+        return NULL;
+    }
+    block_set_size_and_allocated(b, size, 1);
+    return b->payload;
+    }
+
 }
