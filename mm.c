@@ -141,7 +141,7 @@ void coalesce(void *b) {
         pull_free_block(prev);
         // block_set_allocated(prev, 0);
         block_set_allocated(t, 0);
-        pull_free_block(t);
+        // pull_free_block(t);
         block_set_size(t, (one+two+three));
        // set pointer to prev
         t = prev;
@@ -152,7 +152,7 @@ void coalesce(void *b) {
         pull_free_block(next);
         // block_set_allocated(next, 0);
         block_set_allocated(t, 0);
-        pull_free_block(t);
+        // pull_free_block(t);
         block_set_size(t, (one+three));
     }
     else if (!(block_prev_allocated(t)) && (block_next_allocated(t))) { // if prev unallocated, next allocated
@@ -161,7 +161,7 @@ void coalesce(void *b) {
         pull_free_block(prev);
         // block_set_allocated(prev, 0);
         block_set_allocated(t, 0);
-        pull_free_block(t);
+        // pull_free_block(t);
         block_set_size(t, (two+three));
        // set pointer to prev
         t = prev;
