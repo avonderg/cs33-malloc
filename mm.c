@@ -122,7 +122,7 @@ void *mm_malloc(size_t size) {
 void mm_free(void *ptr) {
     block_t *block = payload_to_block(ptr);
     block_set_allocated(block, 0);
-    coalece(ptr); // coalesce
+    coalesce(ptr); // coalesce
     insert_free_block(block);
 }
 
