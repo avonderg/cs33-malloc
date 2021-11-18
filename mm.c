@@ -47,10 +47,12 @@ int mm_init(void) {
 // flist_first = NULL;
 // allocate prologue and epilogue
 // allocate initial heap area
-if ((prologue = mem_sbrk(TAGS_SIZE)) == -1) {
+prologue = mem_sbrk(TAGS_SIZE);
+if (prologue == (void *)-1) {
     return -1;
 }
-if ((epilogue = mem_sbrk(TAGS_SIZE)) == -1) {
+epilogue = mem_sbrk(TAGS_SIZE);
+if (epilogue == (void *)-1) {
     return -1;
 }
 flist_first = NULL; // not null if there is a free block
@@ -97,7 +99,8 @@ void *mm_malloc(size_t size) {
         break;
     }
     }
-    if ((new = mem_sbrk(size)) == -1) { // ask for more memory (can't find a fit)
+    new = mem_sbrk(size);
+    if (new == (void *)-1) { // ask for more memory (can't find a fit)
         return NULL;
     }
     new = epilogue; // new is the end
@@ -142,7 +145,6 @@ block_t* coalesce(void *b) {
         pull_free_block(prev);
         block_set_allocated(prev, 0);
         block_set_allocated(t, 0);
-        // pull_free_block(t);
         block_set_size(prev, (one+two+three));
        // set pointer to prev
         t = prev;
@@ -153,7 +155,6 @@ block_t* coalesce(void *b) {
         pull_free_block(next);
         block_set_allocated(next, 0);
         block_set_allocated(t, 0);
-        // pull_free_block(t);
         block_set_size(t, (one+three));
     }
     else if (!(block_prev_allocated(t)) && (block_next_allocated(t))) { // if prev unallocated, next allocated
@@ -162,7 +163,6 @@ block_t* coalesce(void *b) {
         pull_free_block(prev);
         block_set_allocated(prev, 0);
         block_set_allocated(t, 0);
-        // pull_free_block(t);
         block_set_size(prev, (two+three));
        // set pointer to prev
         t = prev;
@@ -187,6 +187,15 @@ block_t* coalesce(void *b) {
  * returns: a pointer to the new memory block's payload
  */
 void *mm_realloc(void *ptr, size_t size) {
-    // TODO
-    return NULL;
+    if (size == 0) {
+        mm_free(ptr);
+        return NULL;
+    }
+    size = align(size) + TAGS_SIZE; // where do i align the size
+    if (ptr == NULL) {
+        mm_malloc(size);
+    }
+    block_t *block = payload_to_block(ptr);
+    size_t original = block_size(block);
+    size_t requested = block_size(block);
 }
