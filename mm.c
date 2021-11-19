@@ -195,52 +195,49 @@ void *mm_realloc(void *ptr, size_t size) {
     if (ptr == NULL) {
         mm_malloc(size);
     }
+
     block_t *block = payload_to_block(ptr);
     size_t original = block_size(block);
-    size_t requested = block_size(block);
+    size_t requested = size;
+    size_t avail = block_size(block);
     // how to find available size? -> coalesce?
-    size_t avail = original;
-    if (!block_prev_allocated(block)) { // if prev free, increase available space
-        avail = avail + block_size(block_prev(block));
-    }
+    // size_t avail = original;
     if (!block_next_allocated(block)) { // if next free, increase available space
         avail = avail + block_size(block_next(block));
     }
-    if (requested <= avail) { // if we do fit
-        block_t *new = coalesce(ptr); // gets new address
-        block_t *alloc = new;
-        pull_free_block(new);
-        if (size > MINBLOCKSIZE && block_size(new) - size > MINBLOCKSIZE) { // splitting
-            size_t total = block_size(new);
-            block_set_size_and_allocated(alloc, size, 1);
-            block_t *freed = block_next(new);
-            block_set_size_and_allocated(freed, total-size, 0); 
-            insert_free_block(freed);
-        }
-        block_set_allocated(new, 1);
-        return new->payload;
+    if (!block_prev_allocated(block)) { // if prev free, increase available space
+        avail = avail + block_size(block_prev(block));
     }
-    else { // if we do not fit
-        block_t *curr = flist_first;
-        block_t *b = NULL;
-        while (curr != NULL) {
-            if (block_size(curr) >= size) {
-            block_t *alloc = curr;
-            pull_free_block(curr);
-            block_set_allocated(curr, 1);
-            return curr->payload;
-        }
-        curr = block_flink(curr);
-        if (curr == flist_first) {
-            break;
-        }
-        }
-        b = mem_sbrk(size);
-    if (b == (void *)-1) { // ask for more memory (can't find a fit)
-        return NULL;
+    if (((original - requested) >= MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if smaller
+        block_set_size(block, requested);
+        block_t *freed = block_next(block);
+        block_set_size_and_allocated(freed, original-requested, 0);
+        insert_free_block(freed);
+        return ptr;
     }
-    block_set_size_and_allocated(b, size, 1);
-    return b->payload;
+    size_t to_check = original + block_size(block_next(block));
+    if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
+        block_set_size(block, requested);
+        block_t *freed = block_next(block);
+        block_set_size_and_allocated(freed, original-requested, 0);
+        insert_free_block(freed);
+        return ptr;
     }
+    else {
+        block_t *returned = malloc(requested); // get large enough block
+        if (returned == NULL) {
+            fprintf(stderr, "malloc");
+        }
+        return memcpy(returned, block, requested);
+    }
+    
+    // if requested is bigger:
+    // 1. next is free -> check if size of original+next big enough to hold -> extend original
+    // 2. look through free list to find free block big enough -> call malloc (gives block big enough to hold, but input has certain
+    // amoint being used, since moving input -> copy over memory that first bytes to new block before returning
+    // so memory is unchaged
 
+    // nxt case -> if you can try to expand into next block (coalesce), if possible,
+    // try to copy over
+    // if expand to left (use memcpy)
 }
