@@ -191,11 +191,11 @@ void *mm_realloc(void *ptr, size_t size) {
         mm_free(ptr);
         return NULL;
     }
+    size_t oldsize = size;
     size = align(size) + TAGS_SIZE; // where do i align the size
     if (ptr == NULL) {
         mm_malloc(size);
     }
-
     block_t *block = payload_to_block(ptr);
     size_t original = block_size(block);
     size_t requested = size;
@@ -208,7 +208,7 @@ void *mm_realloc(void *ptr, size_t size) {
     // if (!block_prev_allocated(block)) { // if prev free, increase available space
     //     avail = avail + block_size(block_prev(block));
     // }
-    if (((original - requested) >= MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if smaller
+    if (((original - requested) >= MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if requested size smaller than ptr
         block_set_size(block, requested);
         block_t *freed = block_next(block);
         block_set_size_and_allocated(freed, original-requested, 0);
@@ -224,7 +224,7 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     else {
-        void *ret = mm_malloc(requested); // get large enough block
+        void *ret = mm_malloc(oldsize); // get large enough block
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
