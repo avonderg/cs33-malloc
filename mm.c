@@ -224,11 +224,11 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     else {
-        block_t *returned = malloc(requested); // get large enough block
-        if (returned == NULL) {
+        void *ret = malloc(requested); // get large enough block
+        if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
-        return memcpy(returned, block, requested);
+        return memcpy(ret, ptr, requested);
     }
     
     // if requested is bigger:
