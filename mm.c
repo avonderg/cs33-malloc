@@ -199,15 +199,15 @@ void *mm_realloc(void *ptr, size_t size) {
     block_t *block = payload_to_block(ptr);
     size_t original = block_size(block);
     size_t requested = size;
-    size_t avail = block_size(block);
+    // size_t avail = block_size(block);
     // how to find available size? -> coalesce?
     // size_t avail = original;
-    if (!block_next_allocated(block)) { // if next free, increase available space
-        avail = avail + block_size(block_next(block));
-    }
-    if (!block_prev_allocated(block)) { // if prev free, increase available space
-        avail = avail + block_size(block_prev(block));
-    }
+    // if (!block_next_allocated(block)) { // if next free, increase available space
+    //     avail = avail + block_size(block_next(block));
+    // }
+    // if (!block_prev_allocated(block)) { // if prev free, increase available space
+    //     avail = avail + block_size(block_prev(block));
+    // }
     if (((original - requested) >= MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if smaller
         block_set_size(block, requested);
         block_t *freed = block_next(block);
@@ -219,7 +219,7 @@ void *mm_realloc(void *ptr, size_t size) {
     if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
         block_set_size(block, requested);
         block_t *freed = block_next(block);
-        block_set_size_and_allocated(freed, original-requested, 0);
+        block_set_size_and_allocated(freed, to_check-requested, 0);
         insert_free_block(freed);
         return ptr;
     }
