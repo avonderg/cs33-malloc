@@ -223,7 +223,7 @@ void *mm_realloc(void *ptr, size_t size) {
         insert_free_block(freed);
         return ptr;
     }
-    else {
+    else { // otherwise, searches free list
         void *ret = mm_malloc(oldsize); // get large enough block
         if (ret == NULL) {
             fprintf(stderr, "malloc");
