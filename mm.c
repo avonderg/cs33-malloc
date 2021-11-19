@@ -224,7 +224,7 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     else {
-        void *ret = malloc(requested); // get large enough block
+        void *ret = mm_malloc(requested); // get large enough block
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
