@@ -233,9 +233,16 @@ void *mm_realloc(void *ptr, size_t size) {
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
-        void *to_return = memcpy(ret, ptr, requested);
-        mm_free(ptr);
-        return to_return;
+        if (requested > original) {
+            void *to_return = memcpy(ret, ptr, original);
+            mm_free(ptr);
+            return to_return;
+        }
+        else {
+            void *to_return = memcpy(ret, ptr, requested);
+            mm_free(ptr);
+            return to_return;
+        }
     }
     
     // if requested is bigger:
