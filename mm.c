@@ -209,6 +209,7 @@ void *mm_realloc(void *ptr, size_t size) {
     //     avail = avail + block_size(block_prev(block));
     // }
     if (((original - requested) >= MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if requested size smaller than ptr
+        printf("first split");
         block_set_size(block, requested);
         block_t *freed = block_next(block);
         block_set_size_and_allocated(freed, original-requested, 0);
@@ -217,6 +218,7 @@ void *mm_realloc(void *ptr, size_t size) {
     }
     size_t to_check = original + block_size(block_next(block));
     if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
+        printf("next block free");
         block_t *freed = block_next(block);
         pull_free_block(freed);
         if ((to_check - requested) >= MINBLOCKSIZE) {
@@ -229,6 +231,7 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     else { // otherwise, searches free list
+        printf("malloc");
         void *ret = mm_malloc(oldsize); // get large enough block
         if (ret == NULL) {
             fprintf(stderr, "malloc");
