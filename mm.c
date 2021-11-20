@@ -208,7 +208,8 @@ void *mm_realloc(void *ptr, size_t size) {
     // if (!block_prev_allocated(block)) { // if prev free, increase available space
     //     avail = avail + block_size(block_prev(block));
     // }
-    if (((original - requested) >= MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if requested size smaller than ptr
+    //  && (requested <= (original / 2))
+    if (((original - requested) >= MINBLOCKSIZE)) { // splitting if requested size smaller than ptr
         block_set_size(block, requested);
         block_t *freed = block_next(block);
         block_set_size_and_allocated(freed, original-requested, 0);
@@ -233,7 +234,6 @@ void *mm_realloc(void *ptr, size_t size) {
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
-        // original -= WORD_SIZE;
         if (requested < original) {
             void *to_return = memcpy(ret, ptr, requested);
             mm_free(ptr);
@@ -242,11 +242,6 @@ void *mm_realloc(void *ptr, size_t size) {
         void *to_return = memcpy(ret, ptr, original);
         mm_free(ptr);
         return to_return;
-        // else {
-        //     void *to_return = memcpy(ret, ptr, requested);
-        //     mm_free(ptr);
-        //     return to_return;
-        // }
     }
     
     // if requested is bigger:
