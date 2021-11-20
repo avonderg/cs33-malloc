@@ -217,11 +217,15 @@ void *mm_realloc(void *ptr, size_t size) {
     }
     size_t to_check = original + block_size(block_next(block));
     if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
-        block_set_size(block, requested);
         block_t *freed = block_next(block);
         pull_free_block(freed);
-        block_set_size_and_allocated(freed, to_check-requested, 0);
-        insert_free_block(freed);
+        if ((to_check - requested) >= MINBLOCKSIZE) {
+        block_set_size(block, requested);
+        block_set_size_and_allocated(block_next(block), to_check-requested, 0); 
+        insert_free_block(block_next(block));
+        return ptr;
+        }
+        block_set_size(block, to_check);
         return ptr;
     }
     else { // otherwise, searches free list
@@ -229,7 +233,9 @@ void *mm_realloc(void *ptr, size_t size) {
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
-        return memcpy(ret, ptr, requested);
+        void *to_return = memcpy(ret, ptr, requested);
+        mm_free(ptr);
+        return to_return;
     }
     
     // if requested is bigger:
