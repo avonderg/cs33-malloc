@@ -229,11 +229,11 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     else { // otherwise, searches free list
-        void *ret = mm_malloc(oldsize); // get large enough block
+        void *ret = mm_malloc(requested); // get large enough block
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
-        original -= WORD_SIZE;
+        // original -= WORD_SIZE;
         void *to_return = memcpy(ret, ptr, original);
         mm_free(ptr);
         return to_return;
