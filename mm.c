@@ -234,6 +234,11 @@ void *mm_realloc(void *ptr, size_t size) {
             fprintf(stderr, "malloc");
         }
         // original -= WORD_SIZE;
+        if (requested < original) {
+            void *to_return = memcpy(ret, ptr, requested);
+            mm_free(ptr);
+            return to_return;
+        }
         void *to_return = memcpy(ret, ptr, original);
         mm_free(ptr);
         return to_return;
