@@ -99,13 +99,7 @@ void *mm_malloc(size_t size) {
         break;
     }
     }
-    if (!block_prev_allocated(epilogue)) {
-        size_t size_new = block_size(block_prev(epilogue));
-        new = mem_sbrk(size_new);
-    }
-    else {
-        new = mem_sbrk(size);
-    }
+    new = mem_sbrk(size);
     if (new == (void *)-1) { // ask for more memory (can't find a fit)
         return NULL;
     }
