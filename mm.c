@@ -207,19 +207,6 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     size_t to_check = original + block_size(block_next(block));
-    size_t to_check2 = original + block_size(block_prev(block));
-     if (!block_prev_allocated(block) && (requested <= to_check2)) { // if next block is unallocated and original + next big enough
-        block_t *freed = block_prev(block);
-        pull_free_block(freed);
-        if ((to_check2 - requested) >= 16 *MINBLOCKSIZE && (requested <= (to_check2 / 2))) {
-        block_set_size(block, requested);
-        block_set_size_and_allocated(block_prev(block), to_check2-requested, 0); 
-        insert_free_block(block_prev(block));
-        return ptr;
-        }
-        block_set_size(block, to_check2);
-        return ptr;
-    }
     if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
         block_t *freed = block_next(block);
         pull_free_block(freed);
