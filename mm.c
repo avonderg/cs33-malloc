@@ -220,17 +220,18 @@ void *mm_realloc(void *ptr, size_t size) {
         return ptr;
     }
     else { // otherwise, searches free list
+        char to_save[requested];
+        memcpy(to_save,ptr,requested);
+        mm_free(ptr);
         void *ret = mm_malloc(requested); // get large enough block
         if (ret == NULL) {
             fprintf(stderr, "malloc");
         }
         if (requested < original) {
-            void *to_return = memcpy(ret, ptr, requested);
-            mm_free(ptr);
+            void *to_return = memcpy(ret, to_save, requested);
             return to_return;
         }
-        void *to_return = memcpy(ret, ptr, original);
-        mm_free(ptr);
+        void *to_return = memcpy(ret, to_save, original);
         return to_return;
     }
     
