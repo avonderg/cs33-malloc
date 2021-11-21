@@ -84,7 +84,7 @@ void *mm_malloc(size_t size) {
     if (block_size(curr) >= size) {
         block_t *alloc = curr;
         pull_free_block(curr);
-        if (size > MINBLOCKSIZE && block_size(curr) - size > MINBLOCKSIZE) {
+        if (size > 16 * MINBLOCKSIZE && block_size(curr) - size > 16 * MINBLOCKSIZE) {
             size_t total = block_size(curr);
             block_set_size_and_allocated(alloc, size, 1);
             block_t *freed = block_next(curr);
