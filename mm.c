@@ -199,7 +199,7 @@ void *mm_realloc(void *ptr, size_t size) {
     block_t *block = payload_to_block(ptr);
     size_t original = block_size(block);
     size_t requested = size;
-    if (((original - requested) >= requested) && (requested <= (original / 2))) { // splitting if requested size smaller than ptr
+    if (((original - requested) >= 16* MINBLOCKSIZE) && (requested <= (original / 2))) { // splitting if requested size smaller than ptr
         block_set_size(block, requested);
         block_t *freed = block_next(block);
         block_set_size_and_allocated(freed, original-requested, 0);
@@ -210,7 +210,7 @@ void *mm_realloc(void *ptr, size_t size) {
     if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
         block_t *freed = block_next(block);
         pull_free_block(freed);
-        if ((to_check - requested) >= requested && (requested <= (to_check / 2))) {
+        if ((to_check - requested) >= 16 *MINBLOCKSIZE && (requested <= (to_check / 2))) {
         block_set_size(block, requested);
         block_set_size_and_allocated(block_next(block), to_check-requested, 0); 
         insert_free_block(block_next(block));
