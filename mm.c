@@ -218,7 +218,7 @@ void *mm_realloc(void *ptr, size_t size) {
     if (!block_next_allocated(block) && (requested <= to_check)) { // if next block is unallocated and original + next big enough
         block_t *freed = block_next(block);
         pull_free_block(freed); // pulls next block from free list
-        if ((to_check - requested) >= 16 * MINBLOCKSIZE && (requested <= (to_check / 2))) { // if splitting is necessary
+        if ((to_check - requested) >= MINBLOCKSIZE && (requested <= (to_check / 2))) { // if splitting is necessary
         block_set_size(block, requested);
         block_set_size_and_allocated(block_next(block), to_check-requested, 0); // splitting- taking (combined size - requested size)
         insert_free_block(block_next(block)); // inserts next block into free list
