@@ -202,7 +202,7 @@ void *mm_realloc(void *ptr, size_t size) {
     size_t oldsize = size; // stors unaligned size
     size = align(size) + TAGS_SIZE;
     if (ptr == NULL) { // if ptr is null, calls malloc
-        mm_malloc(oldsize);
+        mm_malloc(size);
     }
     block_t *block = payload_to_block(ptr);
     size_t original = block_size(block);
