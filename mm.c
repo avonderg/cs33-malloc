@@ -231,7 +231,7 @@ void *mm_realloc(void *ptr, size_t size) {
         char to_save[requested]; // creates a buffer to save the ptr, so that it can be freed
         memcpy(to_save,ptr,requested); // copies over the memory
         mm_free(ptr); // frees current block
-        void *ret = mm_malloc(oldsize); // get large enough block for requested memory
+        void *ret = mm_malloc(requested); // get large enough block for requested memory
         // before passed in requested size?? 
         if (ret == NULL) { // error checking
             fprintf(stderr, "malloc");
