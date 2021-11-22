@@ -125,13 +125,9 @@ static inline block_t *block_flink(block_t *b) {
 // which should be the offset of the next block in the free list from
 // the prologue
 static inline void block_set_flink(block_t *b, block_t *new_flink) {
-    assert(!block_allocated(b) && !block_allocated(new_flink));
-    // TODO: implement this function!
-    // store value as an integer
-    b->payload[0] = (int)((char*)new_flink - (char *)prologue);
-    // blink vs flink
-    // new flink = block + size
-    // payload[1]
+    assert(!block_allocated(b) && !block_allocated(new_flink)); // asserts
+    // store this offset as an integer
+    b->payload[0] = (int)((char*)new_flink - (char *)prologue);  // since new flink = block + size
 }
 
 // given the input block 'b', returns b's blink which contains the
@@ -146,29 +142,23 @@ static inline block_t *block_blink(block_t *b) {
 // which should be the offset of the previous block in the free list from
 // the prologue
 static inline void block_set_blink(block_t *b, block_t *new_blink) {
-    assert(!block_allocated(b) && !block_allocated(new_blink));
-    // TODO: implement this function!
-    b->payload[1] = (int)((char*)new_blink - (char *)prologue); // error
+    assert(!block_allocated(b) && !block_allocated(new_blink)); // asserts first
+    b->payload[1] = (int)((char*)new_blink - (char *)prologue); // since new blink = block + size
 }
 
 // pull a block from the (circularly doubly linked) free list
 static inline void pull_free_block(block_t *fb) {
-    // TODO: implement this function!
-    // Hint: consider the case when fb is the only block in the free list
-    // remove current fb block, you have prev and next of fb
-    // if fb is only element (prev and next = fb), set flist_first equal to NULL
-    assert(!block_allocated(fb));
-    // if fb is the only elt in the list -> so, prev and next = fb
-    if (fb == flist_first) {
-        // two cases: other blocks following, or it is the only elt
+    assert(!block_allocated(fb)); // asserts first
+    if (fb == flist_first) { // if fb is the only element -> so, prev and next = fb
         if ((flist_first = block_flink(fb)) == fb) { // an assignment
             flist_first = NULL;
             return;
         }
     }
+    // if there are other blocks following flist_first
     block_t *prev = block_blink(fb); // gets free block before fb
     block_t *next = block_flink(fb); // gets next free block after fb
-        // update 'last' and 'flist_first' so they point to 'fb'
+    // updates 'last' and 'flist_first' so they point to 'fb'
     block_set_flink(prev, next);
     block_set_blink(next, prev);
 }
