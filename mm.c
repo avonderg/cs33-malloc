@@ -232,7 +232,6 @@ void *mm_realloc(void *ptr, size_t size) {
         memcpy(to_save,ptr,requested); // copies over the memory
         mm_free(ptr); // frees current block
         void *ret = mm_malloc(requested); // get large enough block for requested memory
-        // before passed in requested size?? 
         if (ret == NULL) { // error checking
             fprintf(stderr, "malloc");
         }
@@ -243,14 +242,4 @@ void *mm_realloc(void *ptr, size_t size) {
         void *to_return = memcpy(ret, to_save, original); // copies over memory, passing in original size
         return to_return;
     }
-    
-    // if requested is bigger:
-    // 1. next is free -> check if size of original+next big enough to hold -> extend original
-    // 2. look through free list to find free block big enough -> call malloc (gives block big enough to hold, but input has certain
-    // amoint being used, since moving input -> copy over memory that first bytes to new block before returning
-    // so memory is unchaged
-
-    // nxt case -> if you can try to expand into next block (coalesce), if possible,
-    // try to copy over
-    // if expand to left (use memcpy)
 }
