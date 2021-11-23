@@ -81,7 +81,7 @@ void *mm_malloc(size_t size) {
             pull_free_block(curr);  // pulls free block
             if (size > MINBLOCKSIZE &&
                 block_size(curr) - size >
-                    (16*MINBLOCKSIZE)) {  // condition to check for splitting
+                    (16 * MINBLOCKSIZE)) {  // condition to check for splitting
                 size_t total = block_size(curr);
                 block_set_size_and_allocated(alloc, size, 1);
                 block_t *freed = block_next(curr);
@@ -165,9 +165,8 @@ block_t *coalesce(void *b) {
                                               // set pointer to prev
         t = prev;
     } else if ((block_prev_allocated(t)) &&
-               !(block_next_allocated(
-                   t))) {  // if prev allocated, next unallocated
-                           // gets sizes
+               !(block_next_allocated(t))) {  // if prev allocated, next
+                                              // unallocated gets sizes
         size_t one = block_size(next);
         size_t three = block_size(t);
         // pulls blocks and sets as unallocated
@@ -176,9 +175,8 @@ block_t *coalesce(void *b) {
         block_set_allocated(t, 0);
         block_set_size(t, (one + three));
     } else if (!(block_prev_allocated(t)) &&
-               (block_next_allocated(
-                   t))) {  // if prev unallocated, next allocated
-                           // gets sizes
+               (block_next_allocated(t))) {  // if prev unallocated, next
+                                             // allocated gets sizes
         size_t two = block_size(prev);
         size_t three = block_size(t);
         // pulls blocks and sets as unallocated
