@@ -81,7 +81,7 @@ void *mm_malloc(size_t size) {
             pull_free_block(curr);  // pulls free block
             if (size > MINBLOCKSIZE &&
                 block_size(curr) - size >
-                    MINBLOCKSIZE) {  // condition to check for splitting
+                    (9*MINBLOCKSIZE)) {  // condition to check for splitting
                 size_t total = block_size(curr);
                 block_set_size_and_allocated(alloc, size, 1);
                 block_t *freed = block_next(curr);
