@@ -89,6 +89,7 @@ void *mm_malloc(size_t size) {
                     freed, total - size,
                     0);  // splitting- taking (total size - size allocated)
                 insert_free_block(freed);  // inserts into free list
+                coalesce(freed->payload);
             }
             block_set_allocated(curr, 1);  // sets curr as allocated
             return curr->payload;          // returns its payload
