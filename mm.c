@@ -81,7 +81,7 @@ void *mm_malloc(size_t size) {
             pull_free_block(curr);  // pulls free block
             if (size > MINBLOCKSIZE &&
                 block_size(curr) - size >
-                    (9*MINBLOCKSIZE)) {  // condition to check for splitting
+                    (16*MINBLOCKSIZE)) {  // condition to check for splitting
                 size_t total = block_size(curr);
                 block_set_size_and_allocated(alloc, size, 1);
                 block_t *freed = block_next(curr);
@@ -89,7 +89,6 @@ void *mm_malloc(size_t size) {
                     freed, total - size,
                     0);  // splitting- taking (total size - size allocated)
                 insert_free_block(freed);  // inserts into free list
-                coalesce(freed->payload);
             }
             block_set_allocated(curr, 1);  // sets curr as allocated
             return curr->payload;          // returns its payload
