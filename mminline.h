@@ -1,13 +1,13 @@
 #ifndef MMINLINE_H_
 #define MMINLINE_H_
-#include "mm.h"
 #include <assert.h>
+#include "mm.h"
 // This file defines inline functions to manipulate blocks and the free list
 // NOTE: to be included only in mm.c
 
 static block_t *flist_first;  // head of circular, doubly linked free list
-extern block_t* prologue;
-extern block_t* epilogue;
+extern block_t *prologue;
+extern block_t *epilogue;
 
 // returns a pointer to the block's end tag (You probably won't need to use this
 // directly)
@@ -125,9 +125,10 @@ static inline block_t *block_flink(block_t *b) {
 // which should be the offset of the next block in the free list from
 // the prologue
 static inline void block_set_flink(block_t *b, block_t *new_flink) {
-    assert(!block_allocated(b) && !block_allocated(new_flink)); // asserts
+    assert(!block_allocated(b) && !block_allocated(new_flink));  // asserts
     // store this offset as an integer
-    b->payload[0] = (int)((char*)new_flink - (char *)prologue);  // since new flink = block + size
+    b->payload[0] = (int)((char *)new_flink -
+                          (char *)prologue);  // since new flink = block + size
 }
 
 // given the input block 'b', returns b's blink which contains the
@@ -142,22 +143,25 @@ static inline block_t *block_blink(block_t *b) {
 // which should be the offset of the previous block in the free list from
 // the prologue
 static inline void block_set_blink(block_t *b, block_t *new_blink) {
-    assert(!block_allocated(b) && !block_allocated(new_blink)); // asserts first
-    b->payload[1] = (int)((char*)new_blink - (char *)prologue); // since new blink = block + size
+    assert(!block_allocated(b) &&
+           !block_allocated(new_blink));  // asserts first
+    b->payload[1] = (int)((char *)new_blink -
+                          (char *)prologue);  // since new blink = block + size
 }
 
 // pull a block from the (circularly doubly linked) free list
 static inline void pull_free_block(block_t *fb) {
-    assert(!block_allocated(fb)); // asserts first
-    if (fb == flist_first) { // if fb is the only element -> so, prev and next = fb
-        if ((flist_first = block_flink(fb)) == fb) { // an assignment
+    assert(!block_allocated(fb));  // asserts first
+    if (fb ==
+        flist_first) {  // if fb is the only element -> so, prev and next = fb
+        if ((flist_first = block_flink(fb)) == fb) {  // an assignment
             flist_first = NULL;
             return;
         }
     }
     // if there are other blocks following flist_first
-    block_t *prev = block_blink(fb); // gets free block before fb
-    block_t *next = block_flink(fb); // gets next free block after fb
+    block_t *prev = block_blink(fb);  // gets free block before fb
+    block_t *next = block_flink(fb);  // gets next free block after fb
     // updates 'last' and 'flist_first' so they point to 'fb'
     block_set_flink(prev, next);
     block_set_blink(next, prev);
